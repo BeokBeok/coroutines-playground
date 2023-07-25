@@ -71,4 +71,5 @@ dependencies {
 
     testImplementation("app.cash.turbine:turbine:1.0.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
 }
