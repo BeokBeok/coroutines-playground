@@ -3,7 +3,11 @@ package com.beok.playground
 import app.cash.turbine.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
@@ -45,5 +49,24 @@ class CoroutinesFlowTest {
                 assertEquals(expected = 2, actual = awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
+    }
+
+    @Test
+    fun `combine을 테스트하려면 delay를 주어야 한다`() = runBlocking {
+        // https://dladukedev.com/articles/005_turbine_combine/
+        val number = (0..2).asFlow()
+            .onEach { delay(1L) } // 이 라인이 없으면 실패한다
+        val intro = listOf("Hello").asFlow()
+
+        val combined = combine(intro, number) { one, two ->
+            "$one $two"
+        }
+
+        combined.test {
+            assertEquals("Hello 0", awaitItem())
+            assertEquals("Hello 1", awaitItem())
+            assertEquals("Hello 2", awaitItem())
+            awaitComplete()
+        }
     }
 }
